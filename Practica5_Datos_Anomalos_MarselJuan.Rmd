@@ -359,8 +359,16 @@ Vamos a comparar ahora los dos métodos de imputación gráficamente eliminando 
   * Recalcula las reglas de identificación de outliers (Ejercicio 6) para la nueva variable `Petal.Length2`.
   
 ```{r Solucion ejercicio 10a, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+iris_imp <- iris_imp %>%
+  mutate(across(Petal.Length2,
+                list(sigma     = reglasigma,
+                     hampel    = reglahampel,
+                     boxplot   = reglaboxplot,
+                     percentil = reglapercentil),
+                .names = "out2_{.fn}"))
 
- 
+# Outliers detectados en Petal.Length2 por cada regla
+iris_imp %>% summarise(across(starts_with("out2_"), ~ sum(.x, na.rm = TRUE)))
 ```
 
   * Representa los dos tipos de imputación empleados en un gráfico de dispersión (`Petal.Length1` vs. `Petal.Length2`) eliminando los outliers identificados con la regla `reglapercentil` y poniendo en diferente color los datos originales y los imputados.
