@@ -75,7 +75,7 @@ Por lo general, no hay un convenio o una representación común para indicar un 
 
 Inspecciona visualmente los valores del conjunto de datos (`View`) y ordena de mayor a menor y de menor a mayor cada variable para descubrir las diferentes inconsistencias que presenta el conjunto `dirty_iris`. Comenta los valores que te llamen la atención.
 
-```{r , include = TRUE}
+```{r Solucion ejercicio 1, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 # Medidas con valores faltantes, longitudes negativas y cero
 #View(dirty_iris)
 summary(dirty_iris)
@@ -116,7 +116,7 @@ Nota: A parte de estas funciones, `is.numeric` comprueba si la variable es numé
 Reemplaza, en todas las columnas numéricas del data frame `dirty_iris`, los valores que sean especiales (usando `is.finite`), negativos, o iguales a cero, por `NA`. 
 Nota: Puedes reemplazar los valores para cada variable del dataframe usando `mutate` con la función `ifelse`.
 
-```{r , include = TRUE}
+```{r Solucion ejercicio 2, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
 dirty_iris <- dirty_iris %>%
   mutate(across(where(is.numeric),
@@ -132,7 +132,7 @@ colSums(is.na(dirty_iris))
   * Calcula el número y porcentaje de observaciones completas (muestras sin ningún dato perdido) empleando `complete.cases` (detecta todos los registros sin datos faltantes).
   * Emplea después la función `na.omit` para quedarnos solo con las filas con datos completos en un nuevo data frame `clean_iris`.
 
-```{r , include = TRUE}
+```{r Solucion ejercicio 3, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 n_completas <- sum(complete.cases(dirty_iris))
 pct_completas <- 100 * n_completas / nrow(dirty_iris)
 cat("Observaciones completas:", n_completas, "de", nrow(dirty_iris),
@@ -160,7 +160,7 @@ Hazlo para el data frame con observaciones completas `clean_iris` (que no tiene 
   * Para obtener el valor MADM, escribe una función `madm(x)` que sea robusta a la presencia de valores NA. Recuerda que el MADM se calcula como $1.4826\cdot\textrm{median}(|x - \textrm{median(x)}|)$.
   * Compara los resultados para los dos conjuntos en la variable `Petal.Length`.
 
-```{r , include = TRUE}
+```{r Solucion ejercicio 4, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 #MADM=1.4826*median(∣x_i −median(x)∣)
 madm <- function(x) {
   1.4826 * median(abs(x - median(x, na.rm = TRUE)), na.rm = TRUE)
@@ -210,7 +210,7 @@ Escribe una función que detecte los outliers de un vector $x$ para cada uno de 
 
   * **Percentiles** `reglapercentil(x)`: Cualquier valor que esté fuera del rango del percentil 5% y 95% se puede considerar como atípico. Usa la función `quantile` para calcular los percentiles.
 
-```{r , include = TRUE}
+```{r Solucion ejercicio 5, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 # Todas las funciones devuelven un vector lógico (TRUE = outlier);
 # si x es NA el resultado es NA.
 
@@ -245,8 +245,15 @@ Utiliza la función `mutate` y `across` para identificar los outliers en la vari
 Nota: podría extenderse la aplicación a todas las variables numéricas usando también `mutate`, `across` y `where`. 
 
 ```{r Solucion ejercicio 6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+iris_out <- dirty_iris %>%
+  mutate(across(Petal.Length,
+                list(sigma     = reglasigma,
+                     hampel    = reglahampel,
+                     boxplot   = reglaboxplot,
+                     percentil = reglapercentil),
+                .names = "out_{.fn}"))
 
-
+iris_out %>% select(Petal.Length, starts_with("out_")) %>% head(10)
 
 ```
 
