@@ -161,8 +161,41 @@ Hazlo para el data frame con observaciones completas `clean_iris` (que no tiene 
   * Compara los resultados para los dos conjuntos en la variable `Petal.Length`.
 
 ```{r , include = TRUE}
+#MADM=1.4826*median(∣x_i −median(x)∣)
+madm <- function(x) {
+  1.4826 * median(abs(x - median(x, na.rm = TRUE)), na.rm = TRUE)
+}
 
+# Estadísticos básicos de todas las variables numéricas
+estadisticos <- function(df) {
+  df %>%
+    summarise(across(where(is.numeric),
+                     list(media   = ~ mean(.x, na.rm = TRUE),
+                          sd      = ~ sd(.x, na.rm = TRUE),
+                          mediana = ~ median(.x, na.rm = TRUE),
+                          madm    = ~ madm(.x),
+                          iqr     = ~ IQR(.x, na.rm = TRUE)),
+                     .names = "{.col}__{.fn}")) %>%
+    pivot_longer(everything(), names_to = c("variable", "estadistico"),
+                 names_sep = "__") %>%
+    pivot_wider(names_from = estadistico, values_from = value)
+}
+
+cat("Observaciones completas (clean_iris):\n")
+est_clean <- estadisticos(clean_iris)
+est_clean
+
+cat("\nDatos con NA, todas las observaciones (dirty_iris):\n")
+est_dirty <- estadisticos(dirty_iris)
+est_dirty
+
+# Comparación para Petal.Length
+bind_rows(clean_iris = est_clean, dirty_iris = est_dirty, .id = "conjunto") %>%
+  filter(variable == "Petal.Length")
 ```
+
+La media y la desviación típica de `Petal.Length` cambian bastante entre los dos conjuntos (la media pasa de 4.16 a 4.48 y la desviación típica de 2.88 a 5.78), porque los outliers (63, 23 y 14) están en `dirty_iris` y distorsionan esos estadísticos; en `clean_iris` se han descartado algunos de ellos al eliminar filas con otros `NA`. En cambio la mediana (4.5), el MADM y el IQR apenas varían, ya que son estadísticos robustos frente a outliers.
+
 
 
 ## Ejercicio 5: Métodos de detección de outliers
