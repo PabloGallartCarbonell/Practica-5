@@ -279,6 +279,8 @@ valores_outliers <- lapply(reglas, function(r) {
 names(valores_outliers) <- sub("^out_", "", reglas)
 valores_outliers
 ```
+La regla 3 sigma es la más conservadora (2 outliers: 23 y 63), porque los propios outliers inflan la desviación típica y "enmascaran" a otros como el 14. Hampel y boxplot, basadas en estadísticos robustos, detectan los mismos 3 (14, 23 y 63). La regla de percentiles marca siempre un porcentaje fijo de los datos (11 valores), por lo que incluye valores razonables además de los claramente erróneos.
+
 
 ## Ejercicio 8: Representación gráfica
 
