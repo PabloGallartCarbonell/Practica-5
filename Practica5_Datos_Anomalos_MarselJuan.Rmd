@@ -265,7 +265,19 @@ En los métodos de detección de outliers analizados, examina los resultados com
   * Los valores etiquetados como outliers (ordenados de menor a mayor).
 
 ```{r Solucion ejercicio 7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+# Número de outliers por método
+iris_out %>%
+  summarise(across(starts_with("out_"), ~ sum(.x, na.rm = TRUE)))
 
+# Valores etiquetados como outliers por cada método (de menor a mayor)
+reglas <- grep("^out_", names(iris_out), value = TRUE)
+valores_outliers <- lapply(reglas, function(r) {
+  sort(iris_out$Petal.Length[iris_out[[r]] %in% TRUE])
+})
+#iris_out[[r]] %in% TRUE = que elementos de esa columna son true
+#iris_out$Petal.Length[iris_out[[r]] %in% TRUE] = devuelve los valores de Petal.Length que tienen true, es decir, son outliers
+names(valores_outliers) <- sub("^out_", "", reglas)
+valores_outliers
 ```
 
 ## Ejercicio 8: Representación gráfica
