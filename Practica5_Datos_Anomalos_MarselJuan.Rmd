@@ -118,7 +118,13 @@ Nota: Puedes reemplazar los valores para cada variable del dataframe usando `mut
 
 ```{r , include = TRUE}
 
+dirty_iris <- dirty_iris %>%
+  mutate(across(where(is.numeric),
+                ~ ifelse(is.finite(.x) & .x > 0, .x, NA)))
+
+colSums(is.na(dirty_iris))
 ```
+
 
 
 ## Ejercicio 3: Valores perdidos y observaciones completas
