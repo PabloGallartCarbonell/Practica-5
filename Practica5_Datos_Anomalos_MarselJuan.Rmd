@@ -133,8 +133,15 @@ colSums(is.na(dirty_iris))
   * Emplea después la función `na.omit` para quedarnos solo con las filas con datos completos en un nuevo data frame `clean_iris`.
 
 ```{r , include = TRUE}
+n_completas <- sum(complete.cases(dirty_iris))
+pct_completas <- 100 * n_completas / nrow(dirty_iris)
+cat("Observaciones completas:", n_completas, "de", nrow(dirty_iris),
+    "(", round(pct_completas, 2), "% )\n")
 
+clean_iris <- na.omit(dirty_iris)
+dim(clean_iris)
 ```
+
 
 # Detección de outliers univariante
 
