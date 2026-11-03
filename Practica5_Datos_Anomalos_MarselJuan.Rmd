@@ -374,9 +374,17 @@ iris_imp %>% summarise(across(starts_with("out2_"), ~ sum(.x, na.rm = TRUE)))
   * Representa los dos tipos de imputación empleados en un gráfico de dispersión (`Petal.Length1` vs. `Petal.Length2`) eliminando los outliers identificados con la regla `reglapercentil` y poniendo en diferente color los datos originales y los imputados.
 
 ```{r Solucion ejercicio 10b, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
-
-
-
+iris_imp %>%
+  filter(!out2_percentil) %>%
+  mutate(tipo = ifelse(imputado, "Imputado", "Original")) %>%
+  ggplot(aes(x = Petal.Length1, y = Petal.Length2, color = tipo)) +
+  geom_point(alpha = 0.8, size = 2) +
+  scale_color_manual(values = c("Original" = "grey60", "Imputado" = "red")) +
+  labs(title = "Imputación con la media global vs. media por especie",
+       subtitle = "Sin outliers según la regla de percentiles",
+       x = "Petal.Length1 (media global)",
+       y = "Petal.Length2 (media por especie)", color = NULL) +
+  theme_minimal()
 ```
 
 
